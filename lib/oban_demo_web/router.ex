@@ -7,5 +7,7 @@ defmodule ObanDemoWeb.Router do
 
   scope "/api", ObanDemoWeb do
     pipe_through :api
+
+    post "/accounts", AccountController, :create
   end
 end

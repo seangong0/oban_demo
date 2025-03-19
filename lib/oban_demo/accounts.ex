@@ -53,6 +53,17 @@ defmodule ObanDemo.Accounts do
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, user} ->
+        %{"user_id" => user.id}
+        |> ObanDemo.Workers.EmailWorker.new()
+        |> Oban.insert()
+
+        {:ok, user}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """

@@ -30,6 +30,8 @@ config :oban_demo, Oban,
   repo: ObanDemo.Repo,
   prefix: "oban"
 
+config :swoosh, :api_client, false
+
 # Configures the endpoint
 config :oban_demo, ObanDemoWeb.Endpoint,
   url: [host: "localhost"],

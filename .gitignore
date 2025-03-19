@@ -26,3 +26,4 @@ erl_crash.dump
 oban_demo-*.tar
 .elixir_ls/
 .vscode/
+.env
