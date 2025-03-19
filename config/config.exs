@@ -14,18 +14,22 @@ config :oban_demo,
 config :oban_demo, ObanDemo.Repo,
   migration_primary_key: [name: :id, type: :binary_id],
   migration_foreign_key: [column: :id, type: :binary_id],
-  migration_timestamps: [
-    type: :utc_datetime_usec,
-    inserted_at: :created_at,
-    updated_at: :changed_at
-  ]
+  migration_timestamps: [type: :utc_datetime_usec]
 
 # config Oban
 config :oban_demo, Oban,
   engine: Oban.Engines.Basic,
-  queues: [default: 10],
+  queues: [
+    # 默认队列
+    default: 10,
+    # 邮件队列
+    emails: 5,
+    # 高优先级队列
+    critical: 1
+  ],
   repo: ObanDemo.Repo,
   prefix: "oban"
+
 # Configures the endpoint
 config :oban_demo, ObanDemoWeb.Endpoint,
   url: [host: "localhost"],
