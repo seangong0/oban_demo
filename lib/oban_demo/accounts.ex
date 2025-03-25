@@ -37,6 +37,10 @@ defmodule ObanDemo.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  @doc false
+  @spec get_user(Ecto.UUID.t()) :: User.t() | nil
+  def get_user(id), do: Repo.get(User, id)
+
   @doc """
   Creates a user.
 
@@ -50,18 +54,19 @@ defmodule ObanDemo.Accounts do
 
   """
   def create_user(attrs \\ %{}) do
-    %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert()
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(:user, User.changeset(%User{}, attrs))
+    |> Ecto.Multi.run(:job, fn _, %{user: user} ->
+      %{"user_id" => user.id}
+      |> ObanDemo.Workers.EmailWorker.new()
+      |> Oban.insert()
+    end)
+    |> Repo.transaction()
     |> case do
-      {:ok, user} ->
-        %{"user_id" => user.id}
-        |> ObanDemo.Workers.EmailWorker.new()
-        |> Oban.insert()
-
+      {:ok, %{user: user}} ->
         {:ok, user}
 
-      {:error, changeset} ->
+      {:error, :user, changeset, _} ->
         {:error, changeset}
     end
   end

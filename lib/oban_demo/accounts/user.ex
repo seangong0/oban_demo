@@ -1,6 +1,14 @@
 defmodule ObanDemo.Accounts.User do
   use ObanDemo.Schema
 
+  @type t :: %__MODULE__{
+          id: Ecto.UUID.t(),
+          name: String.t(),
+          email: String.t(),
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
+
   schema "users" do
     field :name, :string
     field :email, :string

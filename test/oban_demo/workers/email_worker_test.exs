@@ -11,4 +11,11 @@ defmodule ObanDemo.Workers.EmailWorkerTest do
     assert :ok =
              perform_job(EmailWorker, %{"user_id" => user_id})
   end
+
+  test "send welcome email with invalid user" do
+    fake_user_id = Ecto.UUID.generate()
+
+    assert {:error, reason} = perform_job(EmailWorker, %{"user_id" => fake_user_id})
+    assert reason =~ "User #{fake_user_id} not found"
+  end
 end

@@ -8,17 +8,26 @@ defmodule ObanDemo.Workers.EmailWorker do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"user_id" => user_id}}) do
-    user_id
-    |> Accounts.get_user!()
+    case Accounts.get_user(user_id) do
+      nil ->
+        {:error, "User #{user_id} not found"}
+
+      user ->
+        send_welcome_email(user)
+    end
+  end
+
+  defp send_welcome_email(user) do
+    user
     |> UserEmail.welcome()
     |> Mailer.deliver()
-    |> case do
-      {:ok, _} ->
-        :ok
+    |> handle_email_delivery()
+  end
 
-      {:error, reason} ->
-        Logger.error("Failed to send email: #{inspect(reason)}")
-        {:error, reason}
-    end
+  defp handle_email_delivery({:ok, _}), do: :ok
+
+  defp handle_email_delivery({:error, reason}) do
+    Logger.error("Failed to send email: #{inspect(reason)}")
+    {:error, reason}
   end
 end

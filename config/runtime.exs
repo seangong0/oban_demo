@@ -16,7 +16,7 @@ if config_env() != :test do
     port: env!("EMAIL_PORT", :integer!),
     username: env!("EMAIL_USERNAME", :string!),
     password: env!("EMAIL_PASSWORD", :string!),
-    ssl: :if_available,
+    ssl: false,
     tls: :never,
     auth: :always,
     retries: 2,
